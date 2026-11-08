@@ -357,6 +357,14 @@ export default class NextNodeServer extends BaseServer<
         // Intentionally ignored because this is a preload step.
       }
     }
+
+    // Node.js middleware (`proxy.ts`) is otherwise required by the first
+    // matching request, which then also pays for evaluating its module graph.
+    try {
+      await this.loadNodeMiddleware()
+    } catch (_err) {
+      // Intentionally ignored because this is a preload step.
+    }
   }
 
   protected async handleUpgrade(): Promise<void> {
