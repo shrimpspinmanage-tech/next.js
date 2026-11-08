@@ -356,18 +356,33 @@ export function isResSent(res: ServerResponse) {
   return res.finished || res.headersSent
 }
 
-export function normalizeRepeatedSlashes(url: string) {
+export function normalizeRepeatedSlashes(
+  url: string,
+  options?: {
+    /**
+     * Also remove a trailing slash (except for the root path), so that a
+     * server with `trailingSlash: false` can answer `/a///` with a single
+     * redirect to `/a` instead of redirecting to `/a/` first.
+     */
+    removeTrailingSlash?: boolean
+  }
+) {
   const urlParts = url.split('?')
-  const urlNoQuery = urlParts[0]
+  let urlNoQuery = urlParts[0]
+    // first we replace any non-encoded backslashes with forward
+    // then normalize repeated forward slashes
+    .replace(/\\/g, '/')
+    .replace(/\/\/+/g, '/')
 
-  return (
-    urlNoQuery
-      // first we replace any non-encoded backslashes with forward
-      // then normalize repeated forward slashes
-      .replace(/\\/g, '/')
-      .replace(/\/\/+/g, '/') +
-    (urlParts[1] ? `?${urlParts.slice(1).join('?')}` : '')
-  )
+  if (
+    options?.removeTrailingSlash &&
+    urlNoQuery.length > 1 &&
+    urlNoQuery.endsWith('/')
+  ) {
+    urlNoQuery = urlNoQuery.slice(0, -1)
+  }
+
+  return urlNoQuery + (urlParts[1] ? `?${urlParts.slice(1).join('?')}` : '')
 }
 
 export async function loadGetInitialProps<

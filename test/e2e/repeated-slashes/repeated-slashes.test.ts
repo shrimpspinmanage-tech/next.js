@@ -92,6 +92,31 @@ function runTests({
     })
   }
 
+  it('should remove the trailing slash in the same redirect', async () => {
+    const port = resolvePort()
+    if (!isExport) {
+      // `trailingSlash` is off, so `/test////` must not redirect to `/test/`
+      // first and then again to `/test`.
+      const res = await fetchViaHTTP(port, '/test////?hello=1', undefined, {
+        redirect: 'manual',
+      })
+      expect(res.status).toBe(308)
+
+      const parsedUrl = new URL(res.headers.get('location'), res.url)
+      expect(parsedUrl.pathname).toBe('/test')
+      expect(parsedUrl.search).toBe('?hello=1')
+
+      // the root path keeps its single slash
+      const rootRes = await fetchViaHTTP(port, '////', undefined, {
+        redirect: 'manual',
+      })
+      expect(rootRes.status).toBe(308)
+      expect(
+        new URL(rootRes.headers.get('location'), rootRes.url).pathname
+      ).toBe('/')
+    }
+  })
+
   it('should handle double slashes correctly', async () => {
     const port = resolvePort()
     if (!isExport) {

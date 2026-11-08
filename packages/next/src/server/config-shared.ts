@@ -2633,6 +2633,7 @@ export interface NextConfigRuntime {
   i18n: NextConfigComplete['i18n']
   httpAgentOptions: NextConfigComplete['httpAgentOptions']
   skipProxyUrlNormalize: NextConfigComplete['skipProxyUrlNormalize']
+  skipTrailingSlashRedirect: NextConfigComplete['skipTrailingSlashRedirect']
   pageExtensions: NextConfigComplete['pageExtensions']
   useFileSystemPublicRoutes: NextConfigComplete['useFileSystemPublicRoutes']
   logging?: NextConfigComplete['logging']
@@ -2806,6 +2807,7 @@ export function getNextConfigRuntime(
     i18n: config.i18n,
     httpAgentOptions: config.httpAgentOptions,
     skipProxyUrlNormalize: config.skipProxyUrlNormalize,
+    skipTrailingSlashRedirect: config.skipTrailingSlashRedirect,
     pageExtensions: config.pageExtensions,
     useFileSystemPublicRoutes: config.useFileSystemPublicRoutes,
     logging: config.logging,

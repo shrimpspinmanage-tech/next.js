@@ -158,7 +158,14 @@ export function getResolveRoutes(
     // handle trailing slash as that is handled the same as a next.config.js
     // redirect
     if (urlNoQuery?.match(/(\\|\/\/)/)) {
-      parsedUrl = parseUrl(normalizeRepeatedSlashes(req.url!))
+      parsedUrl = parseUrl(
+        normalizeRepeatedSlashes(req.url!, {
+          // Without this, `/a///` would redirect to `/a/` and then once more
+          // to `/a` through the trailing slash redirect.
+          removeTrailingSlash:
+            !config.skipTrailingSlashRedirect && !config.trailingSlash,
+        })
+      )
       return {
         parsedUrl,
         resHeaders,
